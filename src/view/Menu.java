@@ -1,7 +1,6 @@
 package view;
 
 import logic.*;
-import model.ClienteFisico;
 import controller.ClienteFisicoController;
 import java.util.Scanner;
 import util.Consola;
@@ -14,7 +13,6 @@ public class Menu {
 	private final Consola c = new Consola();
 	private final ClienteFisicoLogic clienteFisLog = new ClienteFisicoLogic();
 	private final ClienteVirtualLogic clienteVirLog = new ClienteVirtualLogic();
-	private final InputDatos inputDat = new InputDatos();
 	private final SelectDatos selectDat = new SelectDatos();
 	private final ClienteFisicoController clienteFisCon = new ClienteFisicoController();
 	private final ProductoLogic productoLog = new ProductoLogic();
@@ -24,11 +22,14 @@ public class Menu {
 	}
 
 	public void menu_tienda(Scanner sc) throws SQLException {
-
+		menu_bienvenida(sc);
+	}
+	
+	public void menu_bienvenida(Scanner sc) throws SQLException{
 		boolean salir = false;
 		int opcionBienvenida = 0;
 		do {
-			c.mostrarMensaje("Bienvenido a info-shop\n¿Qué va a realizar?\n1.Compra\n2.Venta");
+			c.mostrarMensaje("Bienvenido a info-shop\n¿Qué va a realizar?\n1.Compra\n2.Venta\n3.Salir");
 
 			opcionBienvenida = sc.nextInt();
 			sc.nextLine(); //LIMPIARBUFFER
@@ -36,13 +37,17 @@ public class Menu {
 			switch (opcionBienvenida) {
 			case 1: {
 				menu_compra();
-
+				break;
 			}case 2: {
 				menu_venta();
 				break;
 
-			}default:
-				throw new IllegalArgumentException("Unexpected value: " + opcionBienvenida);
+			}case 3:{
+				salir = true;
+				break;
+			}
+			default:
+				c.mostrarMensaje("Esa opción no está contemplada. Introduzca una opción válida");
 			}
 
 		}while (!salir);
@@ -69,8 +74,7 @@ public class Menu {
 	}
 
 	public void compra_login() {
-		c.mostrarMensaje("--- Login Cliente ---");
-		clienteVirLog.loginVirtual();
+		clienteVirLog.loginVirtual(sc);
 
 	}
 
@@ -103,19 +107,13 @@ public class Menu {
 	}
 
 	public void venta_login() {
-		c.mostrarMensaje("--- Login Cliente Físico ---");
 
-		clienteFisLog.loginFisico(selectDat);
+		clienteFisLog.loginFisico(sc, selectDat);
 	}
 
 	public void venta_registro() throws SQLException {
 
-		c.mostrarMensaje("Si no está registrado, necesitamos que se registre.");
-		c.mostrarMensaje("--- Registro de Cliente ---");
-		
-		ClienteFisico cf = inputDat.datos_usuario(sc, c);
-
-		clienteFisLog.RegistroUsuarioFisico(sc, c, cf, clienteFisCon);
+		clienteFisLog.RegistroUsuarioFisico(sc, c, clienteFisCon);
 		
 		productoLog.mostrarProductos();
 	}

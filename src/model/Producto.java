@@ -7,13 +7,14 @@ public class Producto {
 	private int stock;
 	private String categoría;
 	
-	public Producto(String nombre, String detalles, double precio, int stock, String categoría) {
+	public Producto(String nombre, double precio, int stock, String categoría) {
 		this.nombre = nombre;
 		this.precio = precio;
 		this.stock = stock;
 		this.categoría = categoría;	
 	}
 	
+	//Este constructor se usa para listar el producto.
 	public Producto(String nombre, double precio, int stock) {
 		this.nombre = nombre;
         this.precio = precio;
