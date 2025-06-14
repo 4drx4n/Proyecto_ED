@@ -6,10 +6,12 @@ public class ClienteVirtualController {
 
 	public boolean selectClienteVirtual(String correo, String contrasenya) throws SQLException {
 		String sql = """
-				SELECT p.id_usuario
-				FROM cliente_virtual cv
-				JOIN persona p ON cv.id_usuario = p.id_usuario
-				WHERE p.correo = ? AND cv.contrasenya = ?""";
+				    SELECT p.id_usuario
+				    FROM persona p
+				    JOIN cliente c ON p.id_usuario = c.id_usuario
+				    JOIN cliente_virtual cv ON c.id_cliente = cv.id_cliente
+				    WHERE p.correo = ? AND cv.contrasenya = ?
+					 """;
 
 
 		try (Connection con = Conexion.getConexion();
