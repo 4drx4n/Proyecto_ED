@@ -6,25 +6,25 @@ public class Producto {
 	private double precio;
 	private int stock;
 	private String categoría;
-	
+
 	public Producto(String nombre, double precio, int stock, String categoría) {
 		this.nombre = nombre;
 		this.precio = precio;
 		this.stock = stock;
 		this.categoría = categoría;	
 	}
-	
+
 	//Este constructor se usa para listar el producto.
 	public Producto(String nombre, double precio, int stock) {
 		this.nombre = nombre;
-        this.precio = precio;
-        this.stock = stock;
+		this.precio = precio;
+		this.stock = stock;
 	}
-	
+
 	public String getNombre() {
 		return nombre;
 	}
-	
+
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
@@ -35,21 +35,21 @@ public class Producto {
 	public void setPrecio(double precio) {
 		this.precio = precio;
 	}
-	
+
 	public int getStock() {
 		return stock;
 	}
-	
+
 	public void setStock(int stock) {
 		this.stock = stock;
 	}
-	
+
 	public String getCategoría() {
 		return categoría;
 	}
-	
+
 	public void setCategoría(String categoría) {
 		this.categoría = categoría;
 	}
-	
+
 }

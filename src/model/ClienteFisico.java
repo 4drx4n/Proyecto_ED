@@ -29,6 +29,6 @@ public class ClienteFisico extends Cliente {
 	public void setPuntos_establecimiento(int puntos_establecimiento) {
 		this.puntos_establecimiento = puntos_establecimiento;
 	}
-	
-	
+
+
 }

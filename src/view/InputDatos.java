@@ -34,7 +34,7 @@ public class InputDatos {
 		Date fecha_alta = new Date(System.currentTimeMillis());
 
 		int puntos_establecimiento = 0;
-		
+
 		return new ClienteFisico(puntos_establecimiento, -1, fecha_alta, -1, dni, correo, nombre, apellidos, direccion, telefono, rol);
 	}
 }

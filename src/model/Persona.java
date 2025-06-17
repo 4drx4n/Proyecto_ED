@@ -10,9 +10,9 @@ public abstract class Persona {
 	private String direccion;
 	private int telefono;
 	private String rol;
-	
+
 	public Persona() {
-		
+
 	}
 
 	public Persona(int id_usuario, String dni, String correo, String nombre, String apellidos, String direccion, int telefono, String rol) {
@@ -89,5 +89,5 @@ public abstract class Persona {
 	public void setRol(String rol) {
 		this.rol = rol;
 	}
-	
+
 }

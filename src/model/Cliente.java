@@ -6,8 +6,8 @@ public abstract class Cliente extends Persona {
 
 	private int id_cliente;
 	private Date fecha_alta;
-	
-	
+
+
 	public Cliente() {
 		super();
 	}
@@ -28,5 +28,5 @@ public abstract class Cliente extends Persona {
 	public void setFecha_alta(Date fecha_alta) {
 		this.fecha_alta = fecha_alta;
 	}
-	
+
 }

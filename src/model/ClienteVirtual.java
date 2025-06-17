@@ -3,7 +3,7 @@ package model;
 import java.util.Date;
 
 public class ClienteVirtual extends Cliente {
-	
+
 	private String contrasenya;
 
 	public ClienteVirtual() {
@@ -30,5 +30,5 @@ public class ClienteVirtual extends Cliente {
 	public void setPassword(String password) {
 		this.contrasenya = password;
 	}
-	
+
 }

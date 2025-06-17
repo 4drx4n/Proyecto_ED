@@ -66,13 +66,13 @@ public class ClienteFisicoController {
 	public Integer selectLoginClienteFisico(String dni, String correo) throws SQLException {
 
 		String sql = """
-				    SELECT cf.puntos_establecimiento
-				    FROM persona p
-				    JOIN cliente c  ON p.id_usuario = c.id_usuario
-				    JOIN cliente_fisico cf ON c.id_cliente = cf.id_cliente
-				    WHERE p.dni    = ?
-				      AND p.correo = ?
-					 """;
+				  SELECT cf.puntos_establecimiento
+				  FROM persona p
+				  JOIN cliente c  ON p.id_usuario = c.id_usuario
+				  JOIN cliente_fisico cf ON c.id_cliente = cf.id_cliente
+				  WHERE p.dni    = ?
+				    AND p.correo = ?
+				""";
 
 		try (Connection con = Conexion.getConexion();
 				PreparedStatement stmt = con.prepareStatement(sql)) {
@@ -87,6 +87,46 @@ public class ClienteFisicoController {
 					return null;  // cliente no encontrado
 				}
 			}
+		}
+	}
+
+	public int selectPuntosEstablecimiento(String dni) throws SQLException {
+		String sql = """
+				  SELECT cf.puntos_establecimiento
+				  FROM persona p
+				  JOIN cliente c ON p.id_usuario = c.id_usuario
+				  JOIN cliente_fisico cf ON c.id_cliente = cf.id_cliente
+				  WHERE p.dni = ?
+				""";
+
+		try (Connection con = Conexion.getConexion();
+				PreparedStatement stmt = con.prepareStatement(sql)) {
+
+			stmt.setString(1, dni);
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+					return rs.getInt("puntos_establecimiento");
+				} else {
+					return 0;
+				}
+			}
+		}
+	}
+
+	public void actualizarPuntos(String dni, int cantidad, boolean sumar) throws SQLException {
+		String operacion = sumar ? "+" : "-";
+		String sql = "UPDATE cliente_fisico cf " +
+				"JOIN cliente c ON cf.id_cliente = c.id_cliente " +
+				"JOIN persona p ON c.id_usuario = p.id_usuario " +
+				"SET cf.puntos_establecimiento = cf.puntos_establecimiento " + operacion + " ? " +
+				"WHERE p.dni = ?";
+
+		try (Connection con = Conexion.getConexion();
+				PreparedStatement stmt = con.prepareStatement(sql)) {
+
+			stmt.setInt(1, cantidad);
+			stmt.setString(2, dni);
+			stmt.executeUpdate();
 		}
 	}
 }

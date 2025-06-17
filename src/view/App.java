@@ -8,8 +8,8 @@ public class App {
 	public static void main(String[] args) throws SQLException {
 		Menu m = new Menu();
 		Scanner sc = new Scanner(System.in);
-		
-		m.menu_tienda(sc);
+
+		m.menu_tienda();
 		sc.close();
 	}
 }

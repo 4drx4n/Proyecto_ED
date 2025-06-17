@@ -16,15 +16,15 @@ public class SelectDatos {
 
 		return new ClienteVirtual (correo, password);
 	}
-	
+
 	public ClienteFisico datos_fisico(Scanner sc, Consola c) {
 		c.mostrarMensaje("Dime tu dni");
 		String dni = sc.nextLine();
-		
+
 		c.mostrarMensaje("Dime el correo asociado a tu cuenta");
 		String correo = sc.nextLine();
-		
+
 		return new ClienteFisico (dni, correo);
-		
+
 	}
 }

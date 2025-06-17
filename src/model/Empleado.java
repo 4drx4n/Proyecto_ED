@@ -18,7 +18,7 @@ public class Empleado extends Persona {
 		this.seguridad_social = seguridad_social;
 		this.fecha_contrato = fecha_contrato;
 	}
-	
+
 
 	public int getCod_empleado() {
 		return cod_empleado;
@@ -43,5 +43,5 @@ public class Empleado extends Persona {
 	public void setFecha_contrato(Date fecha_contrato) {
 		this.fecha_contrato = fecha_contrato;
 	}
-	
+
 }

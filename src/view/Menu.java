@@ -1,31 +1,27 @@
 package view;
 
 import logic.*;
-import controller.ClienteFisicoController;
 import java.util.Scanner;
 import util.Consola;
 import java.sql.SQLException;
 
 
 public class Menu {
-	
+
 	private final Scanner sc = new Scanner (System.in);
 	private final Consola c = new Consola();
 	private final ClienteFisicoLogic clienteFisLog = new ClienteFisicoLogic();
 	private final ClienteVirtualLogic clienteVirLog = new ClienteVirtualLogic();
-	private final SelectDatos selectDat = new SelectDatos();
-	private final ClienteFisicoController clienteFisCon = new ClienteFisicoController();
 	private final ProductoLogic productoLog = new ProductoLogic();
+	private final SelectDatos selectDat = new SelectDatos();
+
+
 
 	public Menu() {
 
 	}
 
-	public void menu_tienda(Scanner sc) throws SQLException {
-		menu_bienvenida(sc);
-	}
-	
-	public void menu_bienvenida(Scanner sc) throws SQLException{
+	public void menu_tienda() throws SQLException {
 		boolean salir = false;
 		int opcionBienvenida = 0;
 		do {
@@ -95,11 +91,11 @@ public class Menu {
 		case 1: {
 			venta_login();
 			break;
-			
+
 		}case 2:{
 			venta_registro();
 			break;
-			
+
 		}
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + opcionVenta);
@@ -109,15 +105,21 @@ public class Menu {
 	public void venta_login() {
 
 		clienteFisLog.loginFisico(sc, selectDat);
+
+		productoLog.mostrarProductos();
+
+		clienteFisLog.ventaFisica(sc);
 	}
 
 	public void venta_registro() throws SQLException {
 
-		clienteFisLog.RegistroUsuarioFisico(sc, c, clienteFisCon);
-		
+		clienteFisLog.RegistroUsuarioFisico(sc);
+
 		productoLog.mostrarProductos();
+
+
 	}
-	
+
 
 
 }
