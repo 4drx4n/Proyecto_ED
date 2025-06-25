@@ -9,9 +9,19 @@ import controller.ClienteVirtualController;
 
 public class ClienteVirtualLogic {
 
-	private final Consola c = new Consola();
+	private Consola c = new Consola();
 	private SelectDatos selectDat = new SelectDatos();
 	private ClienteVirtualController clienteVirCon = new ClienteVirtualController();
+	
+	public ClienteVirtualLogic() {
+		
+	}
+	
+	public ClienteVirtualLogic(Consola c, SelectDatos selectDat, ClienteVirtualController clienteVirCon) {
+        this.c = c;
+        this.selectDat = selectDat;
+        this.clienteVirCon = clienteVirCon;
+    }
 
 	public void loginVirtual(Scanner sc) {
 		c.mostrarMensaje("--- Login Cliente ---");

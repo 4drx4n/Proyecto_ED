@@ -15,6 +15,13 @@ public class ClienteFisico extends Cliente {
 		super(id_cliente, fecha_alta, id_usuario, dni, correo, nombre, apellidos, direccion, telefono, rol);
 		this.puntos_establecimiento = puntos_establecimiento;
 	}
+	
+	public ClienteFisico(int id_cliente, Date fecha_alta,int id_usuario, String dni, String correo, String nombre, String apellidos,
+			String direccion, int telefono, String rol) {
+		super(id_cliente, fecha_alta, id_usuario, dni, correo, nombre, apellidos, direccion, telefono, rol);
+	}
+	
+	
 
 	public ClienteFisico(String dni, String correo) {
 		super();

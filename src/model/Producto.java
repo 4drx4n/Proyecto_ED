@@ -2,23 +2,45 @@ package model;
 
 public class Producto {
 
+	private int idProducto;
 	private String nombre;
 	private double precio;
 	private int stock;
 	private String categoría;
 
-	public Producto(String nombre, double precio, int stock, String categoría) {
+	public Producto() {
+		
+	}
+	
+	public Producto(int idProducto, String nombre, double precio, int stock, String categoría) {
+		this.idProducto = idProducto;
 		this.nombre = nombre;
 		this.precio = precio;
 		this.stock = stock;
-		this.categoría = categoría;	
+		this.categoría = categoría;
 	}
 
-	//Este constructor se usa para listar el producto.
+	// Constructor con ID sin categoría
+	public Producto(int idProducto, String nombre, double precio, int stock) {
+		this.idProducto = idProducto;
+		this.nombre = nombre;
+		this.precio = precio;
+		this.stock = stock;
+	}
+
+	// Constructor para listar
 	public Producto(String nombre, double precio, int stock) {
 		this.nombre = nombre;
 		this.precio = precio;
 		this.stock = stock;
+	}
+
+	public int getIdProducto() {
+		return idProducto;
+	}
+
+	public void setIdProducto(int idProducto) {
+		this.idProducto = idProducto;
 	}
 
 	public String getNombre() {
@@ -32,6 +54,7 @@ public class Producto {
 	public double getPrecio() {
 		return precio;
 	}
+
 	public void setPrecio(double precio) {
 		this.precio = precio;
 	}
@@ -51,5 +74,4 @@ public class Producto {
 	public void setCategoría(String categoría) {
 		this.categoría = categoría;
 	}
-
 }

@@ -9,7 +9,16 @@ public class Conexion {
 	private static final String USER = "root";
 	private static final String PASS = "";
 
+	private static Connection conexionMock = null;
+
 	public static Connection getConexion() throws SQLException {
+		if (conexionMock != null) {
+			return conexionMock;
+		}
 		return DriverManager.getConnection(URL, USER, PASS);
+	}
+
+	public static void setConexion(Connection mockConnection) {
+		conexionMock = mockConnection;
 	}
 }

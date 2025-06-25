@@ -3,6 +3,7 @@ package logic;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import controller.ProductoController;
+import exception.ListaVaciaException;
 import model.Producto;
 import util.Consola;
 
@@ -11,6 +12,14 @@ public class ProductoLogic {
 	private final ProductoController productoCon = new ProductoController();
 	private final Consola c = new Consola();
 
+	public Producto obtenerProductoPorId(int idProducto) {
+		try {
+			return productoCon.selectProductoId(idProducto);
+		} catch (SQLException e) {
+			c.mostrarMensaje("Error al obtener producto por ID: " + e.getMessage());
+			return null;
+		}
+	}
 
 	public ArrayList<Producto> listarProductos() {
 		try {
@@ -21,23 +30,23 @@ public class ProductoLogic {
 		}
 	}
 
-	public void mostrarProductos() {
+	public void mostrarProductos() throws ListaVaciaException {
 		c.mostrarMensaje("--- Productos disponibles ---");
 		ArrayList<Producto> lista = listarProductos();
 		if (lista.isEmpty()) {
-			c.mostrarMensaje("No hay productos disponibles.");
+			throw new ListaVaciaException("No hay productos disponibles que comprar, se aborta la operación.");
 		} else {
 			int i = 1;
 			for (Producto p : lista) {
 				c.mostrarMensaje(
 						i++ + ". " +
 								p.getNombre() +
-								" — " + p.getPrecio() + "€" +
-								" — Stock: " + p.getStock()
+								" — " + p.getPrecio() + "€"
 						);
 			}
 		}
 	}
+
 
 	public Producto obtenerProductoPorNombre(String nombreBuscado) {
 		String productoBuscadoTrim = nombreBuscado.trim();
@@ -49,6 +58,16 @@ public class ProductoLogic {
 			}
 		}
 		return null;
+	}
+
+	public void disminuirStock(Producto p, int cantidad) {
+		int nuevoStock = p.getStock() - cantidad;
+		p.setStock(nuevoStock);
+		try {
+			productoCon.disminuirStock(p.getNombre(), cantidad);
+		} catch (SQLException e) {
+			c.mostrarMensaje("Error al actualizar el stock en BD: " + e.getMessage());
+		}
 	}
 
 }

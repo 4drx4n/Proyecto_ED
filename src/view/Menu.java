@@ -2,27 +2,39 @@ package view;
 
 import logic.*;
 import java.util.Scanner;
+
+import exception.ListaVaciaException;
 import util.Consola;
 import java.sql.SQLException;
 
 
 public class Menu {
 
-	private final Scanner sc = new Scanner (System.in);
-	private final Consola c = new Consola();
-	private final ClienteFisicoLogic clienteFisLog = new ClienteFisicoLogic();
-	private final ClienteVirtualLogic clienteVirLog = new ClienteVirtualLogic();
-	private final ProductoLogic productoLog = new ProductoLogic();
-	private final SelectDatos selectDat = new SelectDatos();
+	private Scanner sc = new Scanner (System.in);
+	private Consola c = new Consola();
+	private ClienteFisicoLogic clienteFisLog = new ClienteFisicoLogic();
+	private ClienteVirtualLogic clienteVirLog = new ClienteVirtualLogic();
+	private ProductoLogic productoLog = new ProductoLogic();
+	private SelectDatos selectDat = new SelectDatos();
 
-
+	boolean salir = false;
 
 	public Menu() {
 
 	}
 
-	public void menu_tienda() throws SQLException {
-		boolean salir = false;
+	public Menu(Scanner sc,Consola c, ClienteFisicoLogic clienteFisLog, 
+			ClienteVirtualLogic clienteVirLog,ProductoLogic productoLog,SelectDatos selectDat) {
+		this.sc             = sc;
+		this.c              = c;
+		this.clienteFisLog  = clienteFisLog;
+		this.clienteVirLog  = clienteVirLog;
+		this.productoLog    = productoLog;
+		this.selectDat      = selectDat;
+	}
+
+	public void menu_tienda() throws SQLException, ListaVaciaException {
+
 		int opcionBienvenida = 0;
 		do {
 			c.mostrarMensaje("Bienvenido a info-shop\n¿Qué va a realizar?\n1.Compra\n2.Venta\n3.Salir");
@@ -80,7 +92,7 @@ public class Menu {
 		 */
 	}
 
-	public void menu_venta() throws SQLException {
+	public void menu_venta() throws SQLException, ListaVaciaException {
 
 		c.mostrarMensaje("El usuario que compra, ¿Está registrado?\n1.Sí\n2.No");
 
@@ -90,10 +102,12 @@ public class Menu {
 		switch (opcionVenta) {
 		case 1: {
 			venta_login();
+			//salir = true;
 			break;
 
 		}case 2:{
 			venta_registro();
+			//salir = true;
 			break;
 
 		}
@@ -102,24 +116,27 @@ public class Menu {
 		}
 	}
 
-	public void venta_login() {
+	public void venta_login() throws ListaVaciaException {
 
 		clienteFisLog.loginFisico(sc, selectDat);
 
 		productoLog.mostrarProductos();
 
 		clienteFisLog.ventaFisica(sc);
+		
 	}
 
-	public void venta_registro() throws SQLException {
+	public void venta_registro() throws SQLException, ListaVaciaException {
 
 		clienteFisLog.RegistroUsuarioFisico(sc);
 
+		clienteFisLog.loginFisico(sc, selectDat);
+
 		productoLog.mostrarProductos();
+
+		clienteFisLog.ventaFisica(sc);
 
 
 	}
-
-
 
 }
