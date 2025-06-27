@@ -4,18 +4,38 @@ import java.sql.*;
 import model.ClienteFisico;
 import util.ValidadorClienteFisico;
 
+/**
+ * Controlador de acceso a datos para clientes físicos.
+ * Gestiona operaciones como el registro, login, obtención y actualización
+ * de puntos en la base de datos.
+ *
+ * Forma parte central del flujo de compra y registro de clientes físicos.
+ */
 public class ClienteFisicoController {
 
 	private final ValidadorClienteFisico validador = new ValidadorClienteFisico();
 
+	/**
+	 * Inserta un nuevo cliente físico en la base de datos.
+	 *
+	 * @param c Cliente físico a registrar.
+	 * @throws SQLException si ocurre un error al realizar la inserción.
+	 */
 	public void insertarClienteFisico(ClienteFisico c) throws SQLException {
 		try (Connection con = Conexion.getConexion()) {
 			insertarClienteFisico(con, c);
 		}
 	}
 
+	/**
+	 * UTIL para testear.
+	 * Inserta un cliente físico en la base de datos utilizando una conexión existente.
+	 *
+	 * @param con Conexión abierta a la base de datos.
+	 * @param c Cliente físico a insertar.
+	 * @throws SQLException si ocurre un error durante la inserción.
+	 */
 	public void insertarClienteFisico(Connection con, ClienteFisico c) throws SQLException {
-		// VALIDACIONES PARA TEST
 		if (!validador.validarCliente(c)) {
 			throw new IllegalArgumentException("Cliente físico inválido" + c);
 		}
@@ -81,6 +101,14 @@ public class ClienteFisicoController {
 		}
 	}
 
+	/**
+	 * Busca un cliente físico en la base de datos según DNI y correo.
+	 *
+	 * @param dni DNI del cliente.
+	 * @param correo Correo electrónico del cliente.
+	 * @return Cliente físico encontrado o null si no existe.
+	 * @throws SQLException si ocurre un error al acceder a la base de datos.
+	 */
 	public ClienteFisico selectLoginClienteFisico(String dni, String correo) throws SQLException {
 		String sql = """
 				    SELECT c.id_cliente, cf.puntos_establecimiento
@@ -111,6 +139,13 @@ public class ClienteFisicoController {
 		}
 	}
 
+	/**
+	 * Devuelve los puntos de establecimiento de un cliente dado su DNI.
+	 *
+	 * @param dni DNI del cliente.
+	 * @return Número de puntos actuales.
+	 * @throws SQLException si ocurre un error de acceso a base de datos.
+	 */
 	public int selectPuntosEstablecimiento(String dni) throws SQLException {
 		String sql = """
 				    SELECT cf.puntos_establecimiento
@@ -133,6 +168,14 @@ public class ClienteFisicoController {
 		}
 	}
 
+	/**
+	 * Actualiza los puntos del cliente en la base de datos.
+	 *
+	 * @param dni DNI del cliente.
+	 * @param cantidad Cantidad de puntos a sumar o restar.
+	 * @param sumar true para sumar puntos, false para restarlos.
+	 * @throws SQLException si ocurre un error al actualizar.
+	 */
 	public void actualizarPuntos(String dni, int cantidad, boolean sumar) throws SQLException {
 		String operacion = sumar ? "+" : "-";
 		String sql = "UPDATE cliente_fisico cf " +

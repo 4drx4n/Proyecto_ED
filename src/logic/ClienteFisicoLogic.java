@@ -18,6 +18,11 @@ import view.SelectDatos;
 import model.PagoTarjeta;
 
 
+/**
+ * Lógica principal para la gestión del cliente físico en el proceso de compra.
+ * Controla el login, el registro, la venta física, el uso y acumulación de puntos,
+ * y la coordinación con productos, pagos y pedidos.
+ */
 public class ClienteFisicoLogic {
 
 	private final ClienteFisicoController clienteFisCon = new ClienteFisicoController();
@@ -31,6 +36,13 @@ public class ClienteFisicoLogic {
 	private final PedidoLogic pedLog = new PedidoLogic();
 
 
+	/**
+	 * Registra a un nuevo cliente físico mediante entrada de datos por consola.
+	 * Valida los datos y los guarda en la base de datos si el usuario los confirma.
+	 *
+	 * @param sc Scanner para capturar los datos del nuevo cliente.
+	 * @throws SQLException si ocurre un error al insertar el cliente en la base de datos.
+	 */
 	public void RegistroUsuarioFisico(Scanner sc) throws SQLException {
 		ClienteFisico cf;
 		boolean datosValidos = false;
@@ -75,6 +87,14 @@ public class ClienteFisicoLogic {
 	}
 
 
+	/**
+	 * Gestiona el login de un cliente físico:
+	 * pide DNI y correo, valida su formato y busca el cliente en la base de datos.
+	 * Si se encuentra, asigna el cliente a clienteActual y muestra sus puntos.
+	 *
+	 * @param sc Scanner para leer la entrada del usuario.
+	 * @param sd SelectDatos para obtener los datos iniciales del cliente.
+	 */
 	public void loginFisico(Scanner sc, SelectDatos sd) {
 		c.mostrarMensaje("--- Login Cliente Físico ---");
 
@@ -112,130 +132,144 @@ public class ClienteFisicoLogic {
 
 
 
+	/**
+	 * Realiza el flujo de una venta física:
+	 * verifica sesión, permite seleccionar productos con validación de stock,
+	 * calcula totales (y descuento por puntos si aplica),
+	 * solicita método de pago y, si se confirma, actualiza stock, puntos y persiste el pedido.
+	 *
+	 * @param sc Scanner para leer las elecciones y cantidades del usuario.
+	 * @throws ListaVaciaException si no hay productos o se agota el stock.
+	 */
 	public void ventaFisica(Scanner sc) throws ListaVaciaException {
 
-	    if (clienteActual == null) {
-	        c.mostrarMensaje("Debes iniciar sesión antes de comprar.");
-	        return;
-	    }
+		if (clienteActual == null) {
+			c.mostrarMensaje("Debes iniciar sesión antes de comprar.");
+			return;
+		}
 
-	    ValidadorProducto valProd = new ValidadorProducto();
-	    TreeMap<Integer, Integer> carrito = new TreeMap<>();
-	    double total = 0.0;
-	    int[] puntosUsados = new int[1];
+		ValidadorProducto valProd = new ValidadorProducto();
+		TreeMap<Integer, Integer> carrito = new TreeMap<>();
+		double total = 0.0;
+		int[] puntosUsados = new int[1];
 
-	    do {
-	        Producto p = null;
-	        String nombre;
+		do {
+			Producto p = null;
+			String nombre;
 
-	        do {
-	            c.mostrarMensaje("¿Qué producto desea comprar?");
-	            nombre = sc.nextLine();
+			do {
+				c.mostrarMensaje("¿Qué producto desea comprar?");
+				nombre = sc.nextLine();
 
-	            if (!valProd.validarNombre(nombre)) {
-	                c.mostrarMensaje("Nombre no válido. Intenta de nuevo.");
-	                continue;
-	            }
+				if (!valProd.validarNombre(nombre)) {
+					c.mostrarMensaje("Nombre no válido. Intenta de nuevo.");
+					continue;
+				}
 
-	            p = prodLog.obtenerProductoPorNombre(nombre);
-	            if (p == null) {
-	                c.mostrarMensaje("Producto no encontrado. Intenta de nuevo.");
-	            }
-	        } while (p == null);
+				p = prodLog.obtenerProductoPorNombre(nombre);
+				if (p == null) {
+					c.mostrarMensaje("Producto no encontrado. Intenta de nuevo.");
+				}
+			} while (p == null);
 
-	        int cantidad = 0;
-	        do {
-	            c.mostrarMensaje("¿Cuántas unidades desea?");
-	            try {
-	                cantidad = sc.nextInt();
-	                sc.nextLine();
-	                if (!valProd.validarStock(p, cantidad)) {
-	                    c.mostrarMensaje("Cantidad no válida o insuficiente stock. (Stock disponible: " + p.getStock() + ")");
-	                    if (p.getStock() == 0) {
-	                        throw new ListaVaciaException("No hay stock del producto seleccionado");
-	                    }
-	                }
-	            } catch (InputMismatchException e) {
-	                c.mostrarMensaje("Entrada no válida. Inténtalo con un número.");
-	                sc.nextLine();
-	            }
-	        } while (!valProd.validarStock(p, cantidad));
+			int cantidad = 0;
+			do {
+				c.mostrarMensaje("¿Cuántas unidades desea?");
+				try {
+					cantidad = sc.nextInt();
+					sc.nextLine();
+					if (!valProd.validarStock(p, cantidad)) {
+						c.mostrarMensaje("Cantidad no válida o insuficiente stock. (Stock disponible: " + p.getStock() + ")");
+						if (p.getStock() == 0) {
+							throw new ListaVaciaException("No hay stock del producto seleccionado");
+						}
+					}
+				} catch (InputMismatchException e) {
+					c.mostrarMensaje("Entrada no válida. Inténtalo con un número.");
+					sc.nextLine();
+				}
+			} while (!valProd.validarStock(p, cantidad));
 
-	        int idProducto = p.getIdProducto();
-	        int existente = carrito.getOrDefault(idProducto, 0);
-	        carrito.put(idProducto, existente + cantidad);
+			int idProducto = p.getIdProducto();
+			int existente = carrito.getOrDefault(idProducto, 0);
+			carrito.put(idProducto, existente + cantidad);
 
-	        c.mostrarMensaje("¿Desea añadir otro producto?\n1. Sí\n2. No");
-	        int seguir = sc.nextInt();
-	        sc.nextLine();
-	        if (seguir != 1) break;
+			c.mostrarMensaje("¿Desea añadir otro producto?\n1. Sí\n2. No");
+			int seguir = sc.nextInt();
+			sc.nextLine();
+			if (seguir != 1) break;
 
-	    } while (true);
+		} while (true);
 
-	    total = 0.0;
-	    c.mostrarMensaje("Resumen de compra:");
-	    for (Map.Entry<Integer, Integer> detalles_carro : carrito.entrySet()) {
-	        Producto producto = prodLog.obtenerProductoPorId(detalles_carro.getKey());
-	        int cantidad = detalles_carro.getValue();
-	        double subtotal = producto.getPrecio() * cantidad;
-	        total += subtotal;
-	        c.mostrarMensaje("- " + producto.getNombre() + ": " + cantidad + " x " + producto.getPrecio() + "€ = " + subtotal + "€");
-	    }
-	    c.mostrarMensaje("Total a pagar: " + total + "€");
+		total = 0.0;
+		c.mostrarMensaje("Resumen de compra:");
+		for (Map.Entry<Integer, Integer> detalles_carro : carrito.entrySet()) {
+			Producto producto = prodLog.obtenerProductoPorId(detalles_carro.getKey());
+			int cantidad = detalles_carro.getValue();
+			double subtotal = producto.getPrecio() * cantidad;
+			total += subtotal;
+			c.mostrarMensaje("- " + producto.getNombre() + ": " + cantidad + " x " + producto.getPrecio() + "€ = " + subtotal + "€");
+		}
+		c.mostrarMensaje("Total a pagar: " + total + "€");
 
-	    if (clienteActual.getPuntos_establecimiento() >= 100) {
-	        c.mostrarMensaje("El cliente puede utilizar sus puntos actuales: " + clienteActual.getPuntos_establecimiento() +
-	                " para conseguir un descuento ¿Quiere utilizarlos?\n1.Si\n2.No");
-	        int opcionDescuento = sc.nextInt();
-	        sc.nextLine();
-	        if (opcionDescuento == 1) {
-	            total = calcularTotalConDescuento(total, puntosUsados);
-	        }
-	    }
+		if (clienteActual.getPuntos_establecimiento() >= 100) {
+			c.mostrarMensaje("El cliente puede utilizar sus puntos actuales: " + clienteActual.getPuntos_establecimiento() +
+					" para conseguir un descuento ¿Quiere utilizarlos?\n1.Si\n2.No");
+			int opcionDescuento = sc.nextInt();
+			sc.nextLine();
+			if (opcionDescuento == 1) {
+				total = calcularTotalConDescuento(total, puntosUsados);
+			}
+		}
 
-	    c.mostrarMensaje("Elija método de pago:\n1. Efectivo\n2. Tarjeta");
-	    int opcionPago = sc.nextInt();
-	    sc.nextLine();
-	    
-	    boolean pagado = false;
-	    switch (opcionPago) {
-	        case 1: {
-	            PagoEfectivo pe = new PagoEfectivo(total);
-	            pagado = pagEfeLog.procesarPago(sc, pe);
-	            break;
-	        }
-	        case 2: {
-	            PagoTarjeta pt = new PagoTarjeta(total);
-	            pagado = pagoTarLog.procesarPago(sc, pt);
-	            break;
-	        }
-	        default: {
-	            c.mostrarMensaje("Opción de pago no válida.");
-	            return;
-	        }
-	    }
+		c.mostrarMensaje("Elija método de pago:\n1. Efectivo\n2. Tarjeta");
+		int opcionPago = sc.nextInt();
+		sc.nextLine();
 
-	    if (pagado) {
-	        int puntosGanados = (int) total;
-	        sumarPuntos(puntosGanados);
-	        if (puntosUsados[0] > 0) {
-	            restarPuntos(puntosUsados[0]);
-	        }
-	        for (Map.Entry<Integer, Integer> entry : carrito.entrySet()) {
-	            Producto producto = prodLog.obtenerProductoPorId(entry.getKey());
-	            int cantidad = entry.getValue();
-	            prodLog.disminuirStock(producto, cantidad);
-	        }
-	        c.mostrarMensaje("Compra realizada con éxito.");
-	        c.mostrarMensaje("Has ganado " + puntosGanados + " puntos.");
-	        pedLog.guardarPedido(clienteActual.getId_cliente(), total, carrito);
-	    } else {
-	        c.mostrarMensaje("No se pudo completar el pago.");
-	    }
+		boolean pagado = false;
+		switch (opcionPago) {
+		case 1: {
+			PagoEfectivo pe = new PagoEfectivo(total);
+			pagado = pagEfeLog.procesarPago(sc, pe);
+			break;
+		}
+		case 2: {
+			PagoTarjeta pt = new PagoTarjeta(total);
+			pagado = pagoTarLog.procesarPago(sc, pt);
+			break;
+		}
+		default: {
+			c.mostrarMensaje("Opción de pago no válida.");
+			return;
+		}
+		}
+
+		if (pagado) {
+			int puntosGanados = (int) total;
+			sumarPuntos(puntosGanados);
+			if (puntosUsados[0] > 0) {
+				restarPuntos(puntosUsados[0]);
+			}
+			for (Map.Entry<Integer, Integer> entry : carrito.entrySet()) {
+				Producto producto = prodLog.obtenerProductoPorId(entry.getKey());
+				int cantidad = entry.getValue();
+				prodLog.disminuirStock(producto, cantidad);
+			}
+			c.mostrarMensaje("Compra realizada con éxito.");
+			c.mostrarMensaje("Has ganado " + puntosGanados + " puntos.");
+			pedLog.guardarPedido(clienteActual.getId_cliente(), total, carrito);
+		} else {
+			c.mostrarMensaje("No se pudo completar el pago.");
+		}
 	}
 
 
 
+	/**
+	 * Devuelve la cantidad actual de puntos que tiene el cliente logueado.
+	 *
+	 * @return Número de puntos actuales del cliente o 0 si ocurre un error.
+	 */
 	public int obtenerPuntos() {
 		try {
 			return clienteFisCon.selectPuntosEstablecimiento(clienteActual.getDni());
@@ -245,6 +279,11 @@ public class ClienteFisicoLogic {
 		}
 	}
 
+	/**
+	 * Suma puntos de fidelización al cliente actual tras una compra.
+	 *
+	 * @param cantidad Cantidad de puntos a sumar.
+	 */
 	public void sumarPuntos(int cantidad) {
 		try {
 			clienteFisCon.actualizarPuntos(clienteActual.getDni(), cantidad, true);
@@ -253,6 +292,11 @@ public class ClienteFisicoLogic {
 		}
 	}
 
+	/**
+	 * Resta puntos de fidelización al cliente actual tras aplicar un descuento.
+	 *
+	 * @param cantidad Cantidad de puntos a restar.
+	 */
 	public void restarPuntos(int cantidad) {
 		try {
 			clienteFisCon.actualizarPuntos(clienteActual.getDni(), cantidad, false);
@@ -261,6 +305,14 @@ public class ClienteFisicoLogic {
 		}
 	}
 
+	/**
+	 * Calcula el total de la compra aplicando un descuento en función
+	 * de los puntos disponibles del cliente.
+	 *
+	 * @param total Importe total original de la compra.
+	 * @param puntosUsados Array que se usa para devolver los puntos consumidos.
+	 * @return Total con descuento aplicado.
+	 */
 	public double calcularTotalConDescuento(double total, int[] puntosUsados) {
 		int puntos = clienteActual.getPuntos_establecimiento();
 		int puntosDescuento = (puntos / 100) * 100;
